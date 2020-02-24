@@ -103,7 +103,12 @@ class Challenge extends Component {
           ? 0
           : (this.state.correctAnswers / Questions.length) * 100)
     );
-    return (
+    return this.state.pageNumber === Questions.length ? (
+      <p>
+        Your score is{" "}
+        {Math.round((this.state.correctAnswers / this.state.pageNumber) * 100)}
+      </p>
+    ) : (
       <div>
         <Progress
           value={((this.state.pageNumber + 1) / Questions.length) * 100}
@@ -166,7 +171,9 @@ class Challenge extends Component {
           >
             {this.state.correctAnswers === 0
               ? 0
-              : (this.state.correctAnswers / Questions.length) * 100}
+              : Math.round(
+                  (this.state.correctAnswers / Questions.length) * 100
+                )}
           </Progress>
           <Progress
             bar
@@ -180,7 +187,9 @@ class Challenge extends Component {
           >
             {this.state.correctAnswers === 0
               ? 0
-              : (this.state.correctAnswers / this.state.pageNumber) * 100}
+              : Math.round(
+                  (this.state.correctAnswers / this.state.pageNumber) * 100
+                )}
           </Progress>
           <Progress
             bar
@@ -198,11 +207,13 @@ class Challenge extends Component {
           >
             {this.state.pageNumber === 0
               ? 100
-              : ((this.state.correctAnswers +
-                  Questions.length -
-                  this.state.pageNumber) /
-                  Questions.length) *
-                100}
+              : Math.round(
+                  ((this.state.correctAnswers +
+                    Questions.length -
+                    this.state.pageNumber) /
+                    Questions.length) *
+                    100
+                )}
           </Progress>
         </Progress>
       </div>
