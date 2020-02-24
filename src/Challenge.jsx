@@ -105,7 +105,9 @@ class Challenge extends Component {
     );
     return (
       <div>
-        <Progress value="15"></Progress>
+        <Progress
+          value={((this.state.pageNumber + 1) / Questions.length) * 100}
+        ></Progress>
 
         <h1>
           Question {this.state.pageNumber + 1} of {Questions.length}
@@ -176,10 +178,9 @@ class Challenge extends Component {
               (this.state.correctAnswers / Questions.length) * 100
             }
           >
-            {(this.state.correctAnswers === 0
+            {this.state.correctAnswers === 0
               ? 0
-              : (this.state.correctAnswers / this.state.pageNumber) * 100) -
-              (this.state.correctAnswers / Questions.length) * 100}
+              : (this.state.correctAnswers / this.state.pageNumber) * 100}
           </Progress>
           <Progress
             bar
@@ -201,8 +202,7 @@ class Challenge extends Component {
                   Questions.length -
                   this.state.pageNumber) /
                   Questions.length) *
-                  100 -
-                (this.state.correctAnswers / this.state.pageNumber) * 100}
+                100}
           </Progress>
         </Progress>
       </div>
