@@ -5,18 +5,10 @@ import StarIcon from "@material-ui/icons/Star";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import LinearProgress from "@material-ui/core/LinearProgress";
-import { lighten, makeStyles, withStyles } from "@material-ui/core/styles";
-
-const BorderLinearProgress = withStyles({
-  root: {
-    height: 10,
-    backgroundColor: lighten("#ff6c5c", 0.5)
-  },
-  bar: {
-    borderRadius: 20,
-    backgroundColor: "#ff6c5c"
-  }
-})(LinearProgress);
+import { lighten, withStyles } from "@material-ui/core/styles";
+import { Progress } from "reactstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { is } from "@babel/types";
 
 class Challenge extends Component {
   constructor(props) {
@@ -24,7 +16,8 @@ class Challenge extends Component {
     this.state = {
       pageNumber: 0,
       alignment: null,
-      showLabel: false
+      showLabel: false,
+      correctAnswers: 0
     };
   }
 
@@ -76,6 +69,9 @@ class Challenge extends Component {
     if (this.state.alignment === null) {
       return null;
     } else {
+      if (this.showResult() === "Correct!") {
+        this.setState({ correctAnswers: this.state.correctAnswers + 1 });
+      }
       this.setState({ pageNumber: this.state.pageNumber + 1, alignment: null });
     }
   };
@@ -85,13 +81,32 @@ class Challenge extends Component {
   };
 
   render() {
+    console.log(); // 9/10
+
+    console.log(
+      "correct = ",
+      (this.state.correctAnswers / this.state.pageNumber) * 100
+    );
+    console.log(
+      "allwrongs = ",
+      (this.state.correctAnswers / Questions.length) * 100
+    );
+    console.log(
+      "allcorrects = ",
+      (this.state.correctAnswers === 0
+        ? 0
+        : (this.state.correctAnswers / this.state.pageNumber) * 100) -
+        (this.state.correctAnswers === 0
+          ? 0
+          : (this.state.correctAnswers / this.state.pageNumber) * 100) +
+        (this.state.correctAnswers === 0
+          ? 0
+          : (this.state.correctAnswers / Questions.length) * 100)
+    );
     return (
       <div>
-        <BorderLinearProgress
-          variant="determinate"
-          color="secondary"
-          value={50}
-        />
+        <Progress value="15"></Progress>
+
         <h1>
           Question {this.state.pageNumber + 1} of {Questions.length}
         </h1>
@@ -135,6 +150,61 @@ class Challenge extends Component {
             Next Page
           </button>
         </form>
+        <Progress multi>
+          {/* <Progress bar value="15"></Progress> */}
+
+          <Progress
+            bar
+            color="warning"
+            value={
+              this.state.correctAnswers === 0
+                ? 0
+                : (this.state.correctAnswers / Questions.length) * 100
+            }
+          >
+            {this.state.correctAnswers === 0
+              ? 0
+              : (this.state.correctAnswers / Questions.length) * 100}
+          </Progress>
+          <Progress
+            bar
+            color="success"
+            value={
+              (this.state.correctAnswers === 0
+                ? 0
+                : (this.state.correctAnswers / this.state.pageNumber) * 100) -
+              (this.state.correctAnswers / Questions.length) * 100
+            }
+          >
+            {(this.state.correctAnswers === 0
+              ? 0
+              : (this.state.correctAnswers / this.state.pageNumber) * 100) -
+              (this.state.correctAnswers / Questions.length) * 100}
+          </Progress>
+          <Progress
+            bar
+            color="info"
+            value={
+              this.state.pageNumber === 0
+                ? 100
+                : ((this.state.correctAnswers +
+                    Questions.length -
+                    this.state.pageNumber) /
+                    Questions.length) *
+                    100 -
+                  (this.state.correctAnswers / this.state.pageNumber) * 100
+            }
+          >
+            {this.state.pageNumber === 0
+              ? 100
+              : ((this.state.correctAnswers +
+                  Questions.length -
+                  this.state.pageNumber) /
+                  Questions.length) *
+                  100 -
+                (this.state.correctAnswers / this.state.pageNumber) * 100}
+          </Progress>
+        </Progress>
       </div>
     );
   }
