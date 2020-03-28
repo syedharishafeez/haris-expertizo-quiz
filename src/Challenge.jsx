@@ -4,11 +4,8 @@ import StarBorderIcon from "@material-ui/icons/StarBorder";
 import StarIcon from "@material-ui/icons/Star";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import { lighten, withStyles } from "@material-ui/core/styles";
 import { Progress } from "reactstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { is } from "@babel/types";
 
 class Challenge extends Component {
   constructor(props) {
@@ -20,6 +17,18 @@ class Challenge extends Component {
       correctAnswers: 0
     };
   }
+
+  removeWithSpace = value => {
+    return value.replace(/%20|%3A|%27|%22|%3F|%2C/g, " ");
+  };
+
+  showProgess = (type, value, display) => {
+    return (
+      <Progress bar color={type} value={value}>
+        {display}
+      </Progress>
+    );
+  };
 
   showResult = () => {
     if (
@@ -81,28 +90,6 @@ class Challenge extends Component {
   };
 
   render() {
-    console.log(); // 9/10
-
-    console.log(
-      "correct = ",
-      (this.state.correctAnswers / this.state.pageNumber) * 100
-    );
-    console.log(
-      "allwrongs = ",
-      (this.state.correctAnswers / Questions.length) * 100
-    );
-    console.log(
-      "allcorrects = ",
-      (this.state.correctAnswers === 0
-        ? 0
-        : (this.state.correctAnswers / this.state.pageNumber) * 100) -
-        (this.state.correctAnswers === 0
-          ? 0
-          : (this.state.correctAnswers / this.state.pageNumber) * 100) +
-        (this.state.correctAnswers === 0
-          ? 0
-          : (this.state.correctAnswers / Questions.length) * 100)
-    );
     return this.state.pageNumber === Questions.length ? (
       <p>
         Your score is{" "}
@@ -117,16 +104,9 @@ class Challenge extends Component {
         <h1>
           Question {this.state.pageNumber + 1} of {Questions.length}
         </h1>
-        <p>
-          {Questions[this.state.pageNumber].category.replace(/%20|%3A/g, " ")}
-        </p>
+        <p>{this.removeWithSpace(Questions[this.state.pageNumber].category)}</p>
         <p>{this.setDifficulty(Questions[this.state.pageNumber].difficulty)}</p>
-        <p>
-          {Questions[this.state.pageNumber].question.replace(
-            /%20|%3A|%27|%22|%3F|%2C/g,
-            " "
-          )}
-        </p>
+        <p>{this.removeWithSpace(Questions[this.state.pageNumber].question)}</p>
         <form onSubmit={this.setPageNumber}>
           <label>
             <ToggleButtonGroup
@@ -139,14 +119,13 @@ class Challenge extends Component {
                 value={Questions[this.state.pageNumber].correct_answer}
                 disabled={this.state.alignment}
               >
-                {Questions[this.state.pageNumber].correct_answer.replace(
-                  /%20|%3A|%27|%22|%3F|%2C/g,
-                  " "
+                {this.removeWithSpace(
+                  Questions[this.state.pageNumber].correct_answer
                 )}
               </ToggleButton>
               {Questions[this.state.pageNumber].incorrect_answers.map(item => (
                 <ToggleButton value={item} disabled={this.state.alignment}>
-                  {item.replace(/%20|%3A|%27|%22|%3F|%2C/g, " ")}
+                  {this.removeWithSpace(item)}
                 </ToggleButton>
               ))}
             </ToggleButtonGroup>
@@ -158,54 +137,40 @@ class Challenge extends Component {
           </button>
         </form>
         <Progress multi>
-          {/* <Progress bar value="15"></Progress> */}
+          {this.showProgess(
+            "warning",
+            this.state.correctAnswers === 0
+              ? 0
+              : (this.state.correctAnswers / Questions.length) * 100,
+            this.state.correctAnswers === 0
+              ? 0
+              : Math.round((this.state.correctAnswers / Questions.length) * 100)
+          )}
 
-          <Progress
-            bar
-            color="warning"
-            value={
-              this.state.correctAnswers === 0
-                ? 0
-                : (this.state.correctAnswers / Questions.length) * 100
-            }
-          >
-            {this.state.correctAnswers === 0
+          {this.showProgess(
+            "success",
+            (this.state.correctAnswers === 0
               ? 0
-              : Math.round(
-                  (this.state.correctAnswers / Questions.length) * 100
-                )}
-          </Progress>
-          <Progress
-            bar
-            color="success"
-            value={
-              (this.state.correctAnswers === 0
-                ? 0
-                : (this.state.correctAnswers / this.state.pageNumber) * 100) -
-              (this.state.correctAnswers / Questions.length) * 100
-            }
-          >
-            {this.state.correctAnswers === 0
+              : (this.state.correctAnswers / this.state.pageNumber) * 100) -
+              (this.state.correctAnswers / Questions.length) * 100,
+            this.state.correctAnswers === 0
               ? 0
               : Math.round(
                   (this.state.correctAnswers / this.state.pageNumber) * 100
-                )}
-          </Progress>
-          <Progress
-            bar
-            color="info"
-            value={
-              this.state.pageNumber === 0
-                ? 100
-                : ((this.state.correctAnswers +
-                    Questions.length -
-                    this.state.pageNumber) /
-                    Questions.length) *
-                    100 -
-                  (this.state.correctAnswers / this.state.pageNumber) * 100
-            }
-          >
-            {this.state.pageNumber === 0
+                )
+          )}
+
+          {this.showProgess(
+            "info",
+            this.state.pageNumber === 0
+              ? 100
+              : ((this.state.correctAnswers +
+                  Questions.length -
+                  this.state.pageNumber) /
+                  Questions.length) *
+                  100 -
+                  (this.state.correctAnswers / this.state.pageNumber) * 100,
+            this.state.pageNumber === 0
               ? 100
               : Math.round(
                   ((this.state.correctAnswers +
@@ -213,8 +178,8 @@ class Challenge extends Component {
                     this.state.pageNumber) /
                     Questions.length) *
                     100
-                )}
-          </Progress>
+                )
+          )}
         </Progress>
       </div>
     );
