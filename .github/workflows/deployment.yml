@@ -42,4 +42,4 @@ jobs:
         run: npm i -g surge
     
       - name: Run Surge
-        run: surge ./build medicsi-demo-new-ui.surge.sh --token ${{secrets.SURGE_TOKEN}}
+        run: surge ./build haris-expertizo-quiz.surge.sh --token ${{secrets.SURGE_TOKEN}}
